@@ -1,0 +1,57 @@
+version: '2'
+
+services:
+  forishdb_prod:
+    container_name: forishdb_prod
+    restart: always
+    image: postgres:12.2
+    environment:
+      POSTGRES_DB: db_forish_prod
+      POSTGRES_USER: forishuser_prod
+      POSTGRES_PASSWORD: forishpass_prod
+    networks:
+      - forish-network
+    volumes:
+        - forishdata:/var/lib/postgresql/forishdata/
+
+  forishweb_prod:
+    container_name: forishweb_prod
+    restart: always
+    build:
+      context: .
+      dockerfile: Dockerfile.prod
+    command: gunicorn config.wsgi:application --bind 0.0.0.0:3838
+    volumes:
+      - static_volume_forish:/home/app/web/static
+      - media_volume_forish:/home/app/web/media
+    networks:
+      - forish-network
+    depends_on:
+      - forishdb_prod
+    ports:
+      - "3838:3838"
+    env_file:
+      - ./.env.prod
+
+  forishnginx:
+    container_name: forish-nginx
+    restart: always
+    build: ./nginx
+    volumes:
+      - static_volume_forish:/home/app/web/static
+      - media_volume_forish:/home/app/web/media
+    ports:
+      - "3939:3939"
+    networks:
+      - forish-network
+    depends_on:
+      - forishweb_prod
+
+volumes:
+  forishdata:
+  static_volume_forish:
+  media_volume_forish:
+
+networks:
+  forish-network:
+    driver: bridge
