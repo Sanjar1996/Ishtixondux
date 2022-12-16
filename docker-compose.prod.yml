@@ -1,57 +1,57 @@
 version: '2'
 
 services:
-  forishdb_prod:
-    container_name: forishdb_prod
+  ishtixondb_prod:
+    container_name: ishtixondb_prod
     restart: always
     image: postgres:12.2
     environment:
-      POSTGRES_DB: db_forish_prod
-      POSTGRES_USER: forishuser_prod
-      POSTGRES_PASSWORD: forishpass_prod
+      POSTGRES_DB: db_ishtixon_prod
+      POSTGRES_USER: ishtixonuser_prod
+      POSTGRES_PASSWORD: ishtixonpass_prod
     networks:
-      - forish-network
+      - ishtixon-network
     volumes:
-        - forishdata:/var/lib/postgresql/forishdata/
+        - ishtixondata:/var/lib/postgresql/ishtixondata/
 
-  forishweb_prod:
-    container_name: forishweb_prod
+  ishtixonweb_prod:
+    container_name: ishtixonweb_prod
     restart: always
     build:
       context: .
       dockerfile: Dockerfile.prod
     command: gunicorn config.wsgi:application --bind 0.0.0.0:3838
     volumes:
-      - static_volume_forish:/home/app/web/static
-      - media_volume_forish:/home/app/web/media
+      - static_volume_ishtixon:/home/app/web/static
+      - media_volume_ishtixon:/home/app/web/media
     networks:
-      - forish-network
+      - ishtixon-network
     depends_on:
-      - forishdb_prod
+      - ishtixondb_prod
     ports:
       - "3838:3838"
     env_file:
       - ./.env.prod
 
-  forishnginx:
-    container_name: forish-nginx
+  ishtixonnginx:
+    container_name: ishtixon-nginx
     restart: always
     build: ./nginx
     volumes:
-      - static_volume_forish:/home/app/web/static
-      - media_volume_forish:/home/app/web/media
+      - static_volume_ishtixon:/home/app/web/static
+      - media_volume_ishtixon:/home/app/web/media
     ports:
       - "3939:3939"
     networks:
-      - forish-network
+      - ishtixon-network
     depends_on:
-      - forishweb_prod
+      - ishtixonweb_prod
 
 volumes:
-  forishdata:
-  static_volume_forish:
-  media_volume_forish:
+  ishtixondata:
+  static_volume_ishtixon:
+  media_volume_ishtixon:
 
 networks:
-  forish-network:
+  ishtixon-network:
     driver: bridge

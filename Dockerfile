@@ -8,7 +8,7 @@ RUN apt-get update && apt-get -y install netcat &&  apt-get -y install gettext
 RUN mkdir /code
 
 COPY . /code/
-RUN pip install -r /code/requirements.txt
+RUN pip install -r /code/requirement.txt
 WORKDIR /code
 
 # RUN chmod +x /code/entrypoint.sh
