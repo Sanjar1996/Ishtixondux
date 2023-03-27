@@ -12,7 +12,7 @@ ENV PYTHONDONTWRITEBYTECODE 1
 RUN apt-get update && apt-get -y install netcat
 
 COPY . /usr/src/app/
-RUN pip wheel --no-cache-dir --no-deps --wheel-dir /usr/src/app/wheels -r /usr/src/app/requirements.txt
+RUN pip wheel --no-cache-dir --no-deps --wheel-dir /usr/src/app/wheels -r /usr/src/app/requirement.txt
 
 #########
 # FINAL #
@@ -42,7 +42,7 @@ WORKDIR $APP_HOME
 # install dependencies
 RUN apt-get update && apt-get -y install netcat &&  apt-get -y install gettext && apt-get -y install nano
 COPY --from=builder /usr/src/app/wheels /wheels
-COPY --from=builder /usr/src/app/requirements.txt .
+COPY --from=builder /usr/src/app/requirement.txt .
 RUN pip install --upgrade pip
 RUN pip install --no-cache /wheels/*
 

@@ -1,57 +1,57 @@
-version: '2'
+  version: '2'
 
-services:
-  ishtixondb_prod:
-    container_name: ishtixondb_prod
-    restart: always
-    image: postgres:12.2
-    environment:
-      POSTGRES_DB: db_ishtixon_prod
-      POSTGRES_USER: ishtixonuser_prod
-      POSTGRES_PASSWORD: ishtixonpass_prod
-    networks:
-      - ishtixon-network
-    volumes:
-        - ishtixondata:/var/lib/postgresql/ishtixondata/
+  services:
+    ishtixondb_prod:
+      container_name: ishtixondb_prod
+      restart: always  
+      image: postgres:12.2
+      environment:
+        POSTGRES_DB: db_ishtixon_prod
+        POSTGRES_USER: ishtixonuser_prod
+        POSTGRES_PASSWORD: ishtixonpass_prod
+      networks:
+        - ishtixon-network
+      volumes:
+          - ishtixondata:/var/lib/postgresql/ishtixondata/
+      
+    ishtixonweb_prod:
+      container_name: ishtixonweb_prod
+      restart: always  
+      build:
+        context: .
+        dockerfile: Dockerfile.prod
+      command: gunicorn config.wsgi:application --bind 0.0.0.0:3838
+      volumes:
+        - static_volume_ishtixon:/home/app/web/static
+        - media_volume_ishtixon:/home/app/web/media
+      networks:
+        - ishtixon-network
+      depends_on: 
+        - ishtixondb_prod
+      ports:
+        - "3838:3838"
+      env_file: 
+        - ./.env.prod
 
-  ishtixonweb_prod:
-    container_name: ishtixonweb_prod
-    restart: always
-    build:
-      context: .
-      dockerfile: Dockerfile.prod
-    command: gunicorn config.wsgi:application --bind 0.0.0.0:3838
-    volumes:
-      - static_volume_ishtixon:/home/app/web/static
-      - media_volume_ishtixon:/home/app/web/media
-    networks:
-      - ishtixon-network
-    depends_on:
-      - ishtixondb_prod
-    ports:
-      - "3838:3838"
-    env_file:
-      - ./.env.prod
+    ishtixonnginx:
+      container_name: ishtixon-nginx
+      restart: always
+      build: ./nginx
+      volumes:
+        - static_volume_ishtixon:/home/app/web/static
+        - media_volume_ishtixon:/home/app/web/media
+      ports:
+        - "9876:9876"
+      networks:
+        - ishtixon-network
+      depends_on:
+        - ishtixonweb_prod
+        
+  volumes:
+    ishtixondata:
+    static_volume_ishtixon:
+    media_volume_ishtixon:
 
-  ishtixonnginx:
-    container_name: ishtixon-nginx
-    restart: always
-    build: ./nginx
-    volumes:
-      - static_volume_ishtixon:/home/app/web/static
-      - media_volume_ishtixon:/home/app/web/media
-    ports:
-      - "3939:3939"
-    networks:
-      - ishtixon-network
-    depends_on:
-      - ishtixonweb_prod
-
-volumes:
-  ishtixondata:
-  static_volume_ishtixon:
-  media_volume_ishtixon:
-
-networks:
-  ishtixon-network:
-    driver: bridge
+  networks:
+    ishtixon-network:
+      driver: bridge

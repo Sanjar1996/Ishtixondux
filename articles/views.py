@@ -1,11 +1,9 @@
-import re
 from django.core import paginator
-from django.core.paginator import Paginator
 from django.shortcuts import render
-from django.utils.translation import gettext as _
+from django.core.paginator import Paginator
 from django.views.generic import DetailView
-
 from .models import *
+from django.utils.translation import gettext as _
 
 
 def homeview(request):
@@ -24,7 +22,7 @@ def homeview(request):
         'sub_models': sub_models,
         'mainsite_models': mainsite_models,
         'news_model': news_model,
-        'page_obj': page_obj,
+        'page_obj': page_obj,   
 
     }
     return render(request, 'home.html', context)
@@ -57,6 +55,10 @@ def newsview(request):
     return render(request, 'news.html', context)
 
 
+class DetailView(DetailView):
+    model = Newsmodel
+    template_name = 'detail.html'
+
 def detailview(request, pk):
     news = Newsmodel.objects.get(id=pk)
     context = {
@@ -72,19 +74,6 @@ def hodim_view(request):
     }
     return render(request, 'team.html', context)
 
-
 def price_about(request):
     context = {}
     return render(request, 'price.html')
-
-
-def xujjat(request):
-    xujjat = XujjatModel.objects.all()
-    xujjatDetail = XujjatDetailModel.objects.all()
-
-    context = {
-        'xujjat': xujjat,
-        'xujjatDetail': xujjatDetail
-    }
-
-    return render(request, 'price.html', context)

@@ -1,8 +1,6 @@
-from pyexpat import model
-from statistics import mode
-from ckeditor.fields import RichTextField
 from django.db import models
 from django.urls import reverse
+from ckeditor.fields import RichTextField
 
 
 class HomeCaruselModel(models.Model):
@@ -93,14 +91,3 @@ class XodimModel(models.Model):
 
     def __str__(self) -> str:
         return self.ism
-        
-
-class XujjatModel(models.Model):
-    title = models.CharField(max_length=255, help_text='Xujjat nomini kiriting')
-
-class XujjatDetailModel(models.Model):
-    title = models.ForeignKey(XodimModel, on_delete=models.CASCADE)
-
-    title_dock = models.CharField(max_length=255, help_text='Xujjat nomini kiriting')
-    file_dock = models.FileField(verbose_name="Xujjatni tanlang", auto_created=True)
-    

@@ -8,5 +8,5 @@ urlpatterns = [
     path('news/', newsview, name='news'),
     path('<int:pk>/', detailview, name='detail'),
     path('hodimlar/', hodim_view, name='hodim'),
-    path('price/', price_about, name='prcie'),
+    path('price/', price_about, name='price'),
 ]
